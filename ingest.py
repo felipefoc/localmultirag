@@ -1,12 +1,13 @@
 import os
 import time
+import shutil
+from utils.db import clear_sqlite
 from dotenv import load_dotenv
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_chroma import Chroma
 from uuid import uuid4
 from models import Models
-
 
 load_dotenv()
 
@@ -43,14 +44,3 @@ def ingest_file(file_path):
     print(f"Adding {len(documents)} documents to the vector store")
     vector_store.add_documents(documents=documents, ids=uuids)
     print(f"Finished ingesting file: {file_path}")
-
-if __name__ == "__main__":
-    while True:
-        for filename in os.listdir(data_folder):
-            if not filename.startswith("_"):
-                file_path = os.path.join(data_folder, filename)
-                ingest_file(file_path)
-                new_filename = "_" + filename
-                new_file_path = os.path.join(data_folder, new_filename)
-                os.rename(file_path, new_file_path)
-            time.sleep(check_interval)
